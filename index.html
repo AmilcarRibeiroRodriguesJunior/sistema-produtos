@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema de Produtos</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f1f5f9;color:#172033;margin:0}
+header{background:#17243a;color:white;padding:24px}
+main{max-width:900px;margin:30px auto;padding:0 16px}
+section{background:white;padding:20px;border-radius:12px;margin-bottom:18px}
+input,button{padding:10px;margin:5px 3px;border:1px solid #cbd5e1;border-radius:6px}
+button{background:#2563eb;color:white;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+td,th{text-align:left;padding:10px;border-bottom:1px solid #ddd}
+.stats{display:flex;gap:12px;flex-wrap:wrap}
+.stats div{background:#e0eaff;padding:14px;border-radius:8px;flex:1}
+</style>
+</head>
+<body>
+<header>
+<h1>📦 Sistema de Produtos</h1>
+<p>Controle demonstrativo de estoque</p>
+</header>
+<main>
+<section class="stats">
+<div>Produtos: <strong id="total">0</strong></div>
+<div>Unidades: <strong id="units">0</strong></div>
+<div>Valor em estoque: <strong id="value">R$ 0,00</strong></div>
+</section>
+<section>
+<h2>Cadastrar produto</h2>
+<form id="form">
+<input id="nome" placeholder="Nome" required>
+<input id="categoria" placeholder="Categoria" required>
+<input id="preco" type="number" min="0.01" step="0.01" placeholder="Preço" required>
+<input id="estoque" type="number" min="0" step="1" placeholder="Estoque" required>
+<button>Cadastrar</button>
+</form>
+</section>
+<section>
+<h2>Produtos cadastrados</h2>
+<table>
+<thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Ação</th></tr></thead>
+<tbody id="lista"></tbody>
+</table>
+</section>
+</main>
+<script>
+let produtos=[
+{nome:"Notebook",categoria:"Informática",preco:3500,estoque:10},
+{nome:"Mouse",categoria:"Periféricos",preco:80,estoque:35},
+{nome:"Teclado",categoria:"Periféricos",preco:150,estoque:20}
+];
+const dinheiro=n=>n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function render(){
+lista.innerHTML="";
+produtos.forEach((p,i)=>{
+let tr=document.createElement("tr");
+[p.nome,p.categoria,dinheiro(p.preco),p.estoque].forEach(v=>{
+let td=document.createElement("td");td.textContent=v;tr.appendChild(td);
+});
+let td=document.createElement("td"),b=document.createElement("button");
+b.textContent="Excluir";b.onclick=()=>{produtos.splice(i,1);render()};
+td.appendChild(b);tr.appendChild(td);lista.appendChild(tr);
+});
+total.textContent=produtos.length;
+units.textContent=produtos.reduce((s,p)=>s+p.estoque,0);
+value.textContent=dinheiro(produtos.reduce((s,p)=>s+p.preco*p.estoque,0));
+}
+document.querySelector("#form").addEventListener("submit",e=>{
+e.preventDefault();
+produtos.push({
+nome:document.querySelector("#nome").value,
+categoria:document.querySelector("#categoria").value,
+preco:Number(document.querySelector("#preco").value),
+estoque:Number(document.querySelector("#estoque").value)
+});
+e.target.reset();render();
+});
+render();
+</script>
+</body>
+</html>
